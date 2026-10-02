@@ -1,0 +1,89 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Independent Reading & Word Building Practice</title><style>
+:root{--a:#315efb;--b:#f7f7fb;--c:#fff;--d:#cfd5e2;--g:#197a4b}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--b);color:#172033;line-height:1.45}.wrap{max-width:1000px;margin:auto;padding:18px}header,.card{background:var(--c);border:2px solid var(--d);border-radius:16px;padding:18px;margin-bottom:16px}h1{margin:0 0 8px;font-size:clamp(26px,4vw,38px)}h2{margin-top:0}.sub{font-size:18px}.nav,.controls,.words,.tiles,.built{display:flex;gap:10px;flex-wrap:wrap}.nav{margin-top:15px}button{font:inherit;font-weight:700;padding:10px 15px;border:2px solid var(--a);border-radius:10px;background:#fff;color:var(--a);cursor:pointer}button:hover{background:#eaf0ff}button.primary{background:var(--a);color:#fff}.step{display:inline-block;background:#eaf0ff;color:var(--a);font-weight:800;border-radius:99px;padding:5px 10px}.instruction{font-size:20px;background:#f9fbff;border-left:6px solid var(--a);padding:12px;border-radius:8px}.word-display{min-height:78px;border:3px dashed var(--d);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:clamp(34px,7vw,58px);font-weight:800;margin:12px 0}.tiles,.built{justify-content:center;min-height:64px;padding:8px}.tile{min-width:62px;min-height:56px;font-size:26px;background:#fff;border:3px solid var(--a);border-radius:12px;display:flex;align-items:center;justify-content:center;padding:8px 12px}.tile:disabled{opacity:.45}.word-chip{font-size:20px}.word-chip.active{background:#eaf0ff}.story{font-size:clamp(24px,4vw,32px);line-height:1.8;border:2px solid var(--d);border-radius:12px;padding:16px;background:#fff}.story span{padding:2px 4px;border-radius:5px;cursor:pointer}.story span.current{background:#ffe28a}.status,.help{margin-top:12px;padding:10px 12px;border-radius:8px;background:#f1f4f9;min-height:24px}.help{background:#fff4d6;border:2px solid #e2bd52}.complete{color:var(--g);font-weight:800}.small{font-size:15px;color:#4f596b}audio{width:100%;margin-top:12px}.report{background:#f6fff9;border:2px solid #a8d7bc;border-radius:12px;padding:14px}
+</style></head><body><div class="wrap"><header><h1>Independent Reading & Word Building Practice</h1><p class="sub">Build the word. Say the word. Read the story. Record your reading.</p><div class="nav"><button id="b-ing" onclick="lesson('ing')">ING</button><button id="b-all" onclick="lesson('all')">ALL</button><button id="b-ock" onclick="lesson('ock')">OCK</button></div></header>
+<section class="card"><span class="step">Step 1</span><h2>Build the Word</h2><p class="instruction">The word stays visible. Tap the parts in order to build it.</p><div id="target" class="word-display"></div><div id="built" class="built"></div><div id="tiles" class="tiles"></div><div class="controls"><button class="primary" onclick="check()">Check My Word</button><button onclick="resetBuild()">Start Again</button><button onclick="help()">Help Me — Say the Parts</button></div><div id="buildStatus" class="status"></div><div id="helpBox" class="help" hidden><strong>Help:</strong> <span id="helpText"></span></div></section>
+<section class="card"><span class="step">Step 2</span><h2>Read the Words</h2><p>Tap a word to make it active. Use Help Me if needed.</p><div id="wordList" class="words"></div></section>
+<section class="card"><span class="step">Step 3</span><h2>Read the Story</h2><p class="instruction">Read the story aloud. Tap words to highlight them as you track.</p><div id="story" class="story"></div></section>
+<section class="card"><span class="step">Step 4</span><h2>Record My Reading</h2><p>Record yourself reading the story. When you are finished, click Stop Recording. Then use Play Recording, Download Recording, or Record Again.</p><div class="controls"><button id="start" class="primary" onclick="startRec()">Start Recording</button><button id="stop" onclick="stopRec()" disabled>Stop Recording</button><button id="play" onclick="playRec()" disabled>Play Recording</button><button id="download" onclick="downloadRec()" disabled>Download Recording</button><button id="again" onclick="recordAgain()" disabled>Record Again</button></div><div id="recordStatus" class="status">No recording yet.</div><audio id="player" controls style="display:none"></audio></section>
+<section class="card"><span class="step">Step 5</span><h2>I'm Finished</h2><div class="report"><div id="done">Complete the word-building, story, and recording steps.</div><button class="primary" onclick="finish()" style="margin-top:10px">I'm Finished</button></div></section><p class="small">Your recording stays on this device until you download it. It is not automatically sent anywhere.</p></div>
+<script>
+const L={ing:{words:[['sing',['s','ing']],['ring',['r','ing']],['king',['k','ing']],['wing',['w','ing']],['bring',['br','ing']],['swing',['sw','ing']],['thing',['th','ing']],['string',['str','ing']]],story:'The king has a swing. He likes to sing on the swing. A bird lands on the swing. The king brings a string and ties it to the swing. The wind is strong, but the king holds on. He keeps singing as the bird flies away.'},all:{words:[['ball',['b','all']],['call',['c','all']],['fall',['f','all']],['tall',['t','all']],['wall',['w','all']],['small',['sm','all']],['stall',['st','all']],['crawl',['cr','all']]],story:'The small dog has a ball. It runs by the tall wall and drops the ball. The dog calls for help. A boy comes to the yard. They look all around the wall. At last, the boy finds the ball near a stall. The dog is glad.'},ock:{words:[['rock',['r','ock']],['sock',['s','ock']],['lock',['l','ock']],['clock',['cl','ock']],['block',['bl','ock']],['flock',['fl','ock']],['shock',['sh','ock']],['knock',['kn','ock']]],story:'A flock of birds rests on a rock. A boy has a block and a sock in his bag. He hears the clock and walks to the door. He gives the door a knock. The birds fly away. The boy finds a small lock by the rock and takes it home.'}};
+let cur='ing',wi=0,placed=[],rec=null,chunks=[],blob=null,url=null;
+function item(){return L[cur].words[wi]};function lesson(k){cur=k;wi=0;placed=[];clearRec();document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('primary'));document.getElementById('b-'+k).classList.add('primary');render();}
+function render(){let x=item();target.textContent=x[0];tiles.innerHTML='';built.innerHTML='';x[1].forEach((p,i)=>{let b=document.createElement('button');b.className='tile';b.textContent=p;b.disabled=placed.includes(i);b.onclick=()=>{placed.push(i);render()};tiles.appendChild(b)});placed.forEach(i=>{let d=document.createElement('div');d.className='tile';d.textContent=x[1][i];built.appendChild(d)});wordList.innerHTML='';L[cur].words.forEach((w,i)=>{let b=document.createElement('button');b.className='word-chip'+(i==wi?' active':'');b.textContent=w[0];b.onclick=()=>{wi=i;placed=[];render()};wordList.appendChild(b)});story.innerHTML='';L[cur].story.split(/(\s+)/).forEach(t=>{if(/^\s+$/.test(t))story.appendChild(document.createTextNode(t));else{let s=document.createElement('span');s.textContent=t;s.onclick=()=>{document.querySelectorAll('.story span').forEach(z=>z.classList.remove('current'));s.classList.add('current')};story.appendChild(s)}});buildStatus.textContent='';helpBox.hidden=true}
+function resetBuild(){placed=[];render()};function check(){let x=item(),ok=placed.length==x[1].length&&placed.every((v,i)=>v==i);buildStatus.innerHTML=ok?'<span class="complete">Great job! Now say the word.</span>':'Try again. Look at the parts and put them in order.'}
+function speak(t){if(!('speechSynthesis'in window)){alert('Spoken help is not supported here. Try Chrome or Edge.');return}speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.8;speechSynthesis.speak(u)}
+function help(){let x=item(),p=x[1];helpText.textContent='Say the parts: '+p.join(' + ')+'. Then blend them all: '+x[0]+'.';helpBox.hidden=false;speak('Say the parts. '+p.join('. ')+'. Now blend them all. '+x[0]+'.')}
+async function startRec(){
+  if(rec && rec.state==='recording') return;
+  try{
+    chunks=[]; blob=null;
+    if(url){URL.revokeObjectURL(url);url=null;}
+    player.pause(); player.removeAttribute('src'); player.style.display='none';
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    rec=new MediaRecorder(stream);
+    rec.ondataavailable=e=>{if(e.data && e.data.size)chunks.push(e.data)};
+    rec.onstop=()=>{
+      blob=new Blob(chunks,{type:'audio/webm'});
+      url=URL.createObjectURL(blob);
+      player.src=url;
+      player.style.display='block';
+      start.disabled=true;
+      stop.disabled=true;
+      play.disabled=false;
+      download.disabled=false;
+      again.disabled=false;
+      recordStatus.textContent='Recording stopped. Click Play Recording to listen, Download Recording to save it, or Record Again to start a new recording.';
+      stream.getTracks().forEach(t=>t.stop());
+    };
+    rec.start();
+    start.disabled=true;
+    stop.disabled=false;
+    play.disabled=true;
+    download.disabled=true;
+    again.disabled=true;
+    recordStatus.textContent='Recording now... Read the story aloud. When you are finished, click Stop Recording.';
+  }catch(e){
+    recordStatus.textContent='Microphone access was not allowed. Allow the microphone and try again.';
+  }
+}
+function stopRec(){
+  if(!rec || rec.state!=='recording'){
+    recordStatus.textContent='There is no recording in progress.';
+    return;
+  }
+  recordStatus.textContent='Stopping recording...';
+  rec.stop();
+}
+function playRec(){
+  if(!url){recordStatus.textContent='There is no recording to play yet.';return;}
+  player.style.display='block';
+  player.currentTime=0;
+  player.play().catch(()=>{recordStatus.textContent='Use the audio player Play button to listen to your recording.';});
+}
+function downloadRec(){
+  if(!blob || !url){recordStatus.textContent='There is no recording to download yet.';return;}
+  let a=document.createElement('a');
+  a.href=url;
+  a.download='reading-'+cur+'.webm';
+  document.body.appendChild(a); a.click(); a.remove();
+  recordStatus.textContent='Your recording was downloaded. You can attach it to Google Classroom.';
+}
+function recordAgain(){
+  clearRec();
+  startRec();
+}
+function clearRec(){
+  if(rec && rec.state==='recording')rec.stop();
+  rec=null; blob=null; chunks=[];
+  if(url){URL.revokeObjectURL(url);url=null;}
+  player.pause(); player.removeAttribute('src'); player.style.display='none';
+  start.disabled=false;
+  stop.disabled=true;
+  play.disabled=true;
+  download.disabled=true;
+  again.disabled=true;
+  recordStatus.textContent='No recording yet.';
+}
+function finish(){done.textContent=blob?'Lesson complete. Download your recording and attach it to the Google Classroom assignment.':'You are almost done. Record your reading, then download the recording for Google Classroom.';if(blob)done.className='complete'}
+</script></body></html>
